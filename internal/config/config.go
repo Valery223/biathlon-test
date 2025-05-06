@@ -8,12 +8,12 @@ import (
 )
 
 type Config struct {
-	Laps          int       `json:"laps"`
-	LapLength     int       `json:"lapLen"`
-	PenaltyLength int       `json:"penaltyLen"`
-	FiringLines   int       `json:"firingLines"`
-	StartTime     time.Time `json:"start"`
-	StartDelta    time.Time `json:"startDelta"`
+	Laps          int           `json:"laps"`
+	LapLength     int           `json:"lapLen"`
+	PenaltyLength int           `json:"penaltyLen"`
+	FiringLines   int           `json:"firingLines"`
+	StartTime     time.Time     `json:"start"`
+	StartDelta    time.Duration `json:"startDelta"`
 }
 
 func MustLoadConfig(configPath string) *Config {
@@ -43,10 +43,14 @@ func MustLoadConfig(configPath string) *Config {
 		log.Fatalf("failed to parse start time: %v", err)
 	}
 
-	startDelta, err := time.Parse("15:04:05", tmp.StartDelta)
+	t, err := time.Parse("15:04:05", tmp.StartDelta)
 	if err != nil {
-		log.Fatalf("failed to parse start delta: %v", err)
+		log.Fatalf("failed to parse start delta time: %v", err)
 	}
+	startDelta := time.Duration(t.Hour())*time.Hour +
+		time.Duration(t.Minute())*time.Minute +
+		time.Duration(t.Second())*time.Second +
+		time.Duration(t.Nanosecond())
 
 	return &Config{
 		Laps:          tmp.Laps,

@@ -33,10 +33,14 @@ func NewTask(cfg *config.Config, scanner ScannerEvent) *Task {
 // It returns an error if a critical issue occurs during event scanning or processing.
 func (t Task) Execute() error {
 	mapCompetitors := make(map[int]*domain.Competitor)
+
 	err := t.processAllEvents(mapCompetitors)
 	if err != nil {
 		return fmt.Errorf("error processing events: %w", err)
 	}
+
+	// Check for competitors who have not started
+	t.checkNotStartedCompetitors(mapCompetitors)
 
 	fmt.Println("Final reports")
 	for _, competitor := range mapCompetitors {
@@ -77,4 +81,12 @@ func (t Task) handleAndShowEvent(event *domain.Event, mapCompetitors map[int]*do
 	err := eventproccesor.HandleEvent(event, mapCompetitors, t.cfg.Laps)
 
 	return err
+}
+
+func (t Task) checkNotStartedCompetitors(mapCompetitors map[int]*domain.Competitor) {
+	for _, competitor := range mapCompetitors {
+		if competitor.ActualStart.Sub(competitor.ScheduledStart) > t.cfg.StartDelta {
+			competitor.Status = domain.StatusNotStarted
+		}
+	}
 }
