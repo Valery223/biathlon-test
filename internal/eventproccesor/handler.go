@@ -32,6 +32,7 @@ func HandleEvent(e *domain.Event, competitors map[int]*domain.Competitor, lapsCo
 	case domain.EventCompetitorStarted:
 		competitor.ActualStart = e.Time
 	case domain.EventCompetitorOnFiringRange:
+		competitor.FiringCount++
 		// lap := competitor.Laps[competitor.CurrentLap]
 		// lap.FiringStart = e.Time
 	case domain.EventTargetHit:

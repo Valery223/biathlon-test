@@ -40,7 +40,7 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 		r.TotalTime = c.Laps[len(c.Laps)-1].End.Sub(c.ScheduledStart)
 	}
 
-	r.PossibleShots = len(c.Laps) * ShotsPerFiring
+	r.PossibleShots = c.FiringCount * ShotsPerFiring
 
 	currentLapStartTime := c.ScheduledStart
 	for _, lap := range c.Laps {

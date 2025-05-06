@@ -10,6 +10,7 @@ type Competitor struct {
 	Laps           []Lap
 	PenaltyLaps    []PenaltyLap
 	Shots          int
+	FiringCount    int // Number of times the competitor was on the firing line
 	CurrentLap     int
 }
 
