@@ -7,8 +7,8 @@ type Lap struct {
 	Start     time.Time
 	End       time.Time
 	TargetHit int
-	// FiringStart time.Time
-	// FiringEnd   time.Time
+	// FiringStart time.Time // Not used
+	// FiringEnd   time.Time // Not used
 }
 
 // PenaltyLap represents a single penalty lap.
