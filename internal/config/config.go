@@ -1,7 +1,9 @@
 package config
 
 import (
+	"encoding/json"
 	"log"
+	"os"
 	"time"
 )
 
@@ -14,23 +16,44 @@ type Config struct {
 	StartDelta    time.Time `json:"startDelta"`
 }
 
-func MustLoadConfig() *Config {
-	startTime, err := time.Parse("15:04:05.000", "10:00:00.000")
+func MustLoadConfig(configPath string) *Config {
+
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		log.Fatalf("failed to read config file: %v", err)
+	}
+
+	// Временная структура для парсинга строковых дат
+	type tempConfig struct {
+		Laps          int    `json:"laps"`
+		LapLength     int    `json:"lapLen"`
+		PenaltyLength int    `json:"penaltyLen"`
+		FiringLines   int    `json:"firingLines"`
+		StartTime     string `json:"start"`
+		StartDelta    string `json:"startDelta"`
+	}
+
+	var tmp tempConfig
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		log.Fatalf("failed to parse config: %v", err)
+	}
+
+	startTime, err := time.Parse("15:04:05.000", tmp.StartTime)
 	if err != nil {
 		log.Fatalf("failed to parse start time: %v", err)
 	}
 
-	startDelta, err := time.Parse("15:04:05", "00:00:30")
+	startDelta, err := time.Parse("15:04:05", tmp.StartDelta)
 	if err != nil {
-		log.Fatalf("failed to parse start time: %v", err)
+		log.Fatalf("failed to parse start delta: %v", err)
 	}
 
-	cfg := Config{Laps: 2,
-		LapLength:     3500,
-		PenaltyLength: 150,
-		FiringLines:   2,
+	return &Config{
+		Laps:          tmp.Laps,
+		LapLength:     tmp.LapLength,
+		PenaltyLength: tmp.PenaltyLength,
+		FiringLines:   tmp.FiringLines,
 		StartTime:     startTime,
 		StartDelta:    startDelta,
 	}
-	return &cfg
 }
