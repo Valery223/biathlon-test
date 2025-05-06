@@ -21,6 +21,7 @@ const (
 	EventCompetitorLeftPenalty     EventID = 9
 	EventCompetitorEndedMainLap    EventID = 10
 	EventCompetitorCanNotContinue  EventID = 11
+	EventCompetitorDisqualified    EventID = 32
 )
 
 // ScannerEvent is an interface for components that can provide race events.
@@ -70,6 +71,8 @@ func (e *Event) Format() string {
 		return fmt.Sprintf("[%s] The competitor(%d) ended the main lap", timestamp, e.CompetitorID)
 	case EventCompetitorCanNotContinue:
 		return fmt.Sprintf("[%s] The competitor(%d) can`t continue: %s", timestamp, e.CompetitorID, e.Comments)
+	case EventCompetitorDisqualified:
+		return fmt.Sprintf("[%s] The competitor(%d) is disqualified", timestamp, e.CompetitorID)
 	default:
 		return fmt.Sprintf("[%s] Unknown event(%d) for competitor(%d)", timestamp, e.ID, e.CompetitorID)
 	}

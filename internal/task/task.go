@@ -87,6 +87,13 @@ func (t Task) checkNotStartedCompetitors(mapCompetitors map[int]*domain.Competit
 	for _, competitor := range mapCompetitors {
 		if competitor.ActualStart.Sub(competitor.ScheduledStart) > t.cfg.StartDelta {
 			competitor.Status = domain.StatusNotStarted
+			event := &domain.Event{
+				Time:         competitor.ScheduledStart.Add(t.cfg.StartDelta),
+				ID:           32,
+				CompetitorID: competitor.ID,
+				Comments:     "",
+			}
+			fmt.Println(event.Format())
 		}
 	}
 }
