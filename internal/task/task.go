@@ -34,6 +34,7 @@ func (t Task) Execute() error {
 		return fmt.Errorf("error processing events: %w", err)
 	}
 
+	fmt.Println("Final reports")
 	for _, competitor := range mapCompetitors {
 		report := reporting.CalculateReport(*competitor, t.cfg)
 		fmt.Println(report)
