@@ -2,6 +2,8 @@ package domain
 
 import "time"
 
+// Competitor represents a participant in the race.
+// It holds their personal details, race status, and performance data.
 type Competitor struct {
 	ID             int
 	Status         Status
@@ -14,6 +16,7 @@ type Competitor struct {
 	CurrentLap     int
 }
 
+// Status represents the current state of a competitor in the race.
 type Status int
 
 const (

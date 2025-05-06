@@ -7,6 +7,7 @@ import (
 
 type EventID int
 
+// Defines the various types of events that can occur.
 const (
 	EventUnknown                   EventID = 0
 	EventCompetitorRegistered      EventID = 1
@@ -22,17 +23,28 @@ const (
 	EventCompetitorCanNotContinue  EventID = 11
 )
 
+// ScannerEvent is an interface for components that can provide race events.
 type ScannerEvent interface {
+	// Scan attempts to read the next Event.
+	// It should return io.EOF when there are no more events.
+	// Any other error indicates a problem during scanning.
 	Scan(*Event) error
 }
 
+// Event represents a single occurrence or action during the race.
 type Event struct {
-	Time         time.Time
-	ID           EventID
+	// Time is when the event occurred.
+	Time time.Time
+	// ID is the unique identifier for the event type.
+	ID EventID
+	// CompetitorID is the unique identifier for the competitor involved in the event.
+	// In task name - ExtraParams.
 	CompetitorID int
-	Comments     string
+	// Comments provides additional information about the event.
+	Comments string
 }
 
+// Format returns a string representation of the event, including its time, ID, competitor ID, and comments.
 func (e *Event) Format() string {
 	timestamp := e.Time.Format("15:04:05.000")
 	switch e.ID {

@@ -7,9 +7,14 @@ import (
 	"github.com/Valery223/biathlon-test/internal/domain"
 )
 
+// HandleEvent processes a single race event and updates the state of the relevant competitor.
+// It takes the event, a map of all competitors, and the race configuration as input.
+// It returns an error if the event is invalid or cannot be processed.
 func HandleEvent(e *domain.Event, competitors map[int]*domain.Competitor, lapsCount int) error {
 	competitorsID := e.CompetitorID
 	competitor, ok := competitors[competitorsID]
+
+	// For most events, the competitor must already exist(if event is not CompetitorRegistered)
 	if e.ID != domain.EventCompetitorRegistered && !ok {
 		return fmt.Errorf("competitor %d not found", competitorsID)
 	}
@@ -28,18 +33,17 @@ func HandleEvent(e *domain.Event, competitors map[int]*domain.Competitor, lapsCo
 		competitor.Laps[competitor.CurrentLap].Start = competitor.ScheduledStart
 
 	case domain.EventCompetitorOnStartLine:
-		//Nothing to do
+		// Nothing to do
+		// No specific state change implemented for this event yet
 	case domain.EventCompetitorStarted:
 		competitor.ActualStart = e.Time
 	case domain.EventCompetitorOnFiringRange:
 		competitor.FiringCount++
-		// lap := competitor.Laps[competitor.CurrentLap]
-		// lap.FiringStart = e.Time
 	case domain.EventTargetHit:
 		competitor.Shots++
 	case domain.EventCompetitorLeftFiringRange:
-		// lap := competitor.Laps[competitor.CurrentLap]
-		// lap.FiringEnd = e.Time
+		// Nothing to do
+		// No specific state change implemented for this event yet
 	case domain.EventCompetitorEnteredPenalty:
 		competitor.PenaltyLaps = append(competitor.PenaltyLaps, domain.PenaltyLap{
 			Start: e.Time,

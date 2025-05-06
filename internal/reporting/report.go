@@ -8,13 +8,16 @@ import (
 	"github.com/Valery223/biathlon-test/internal/domain"
 )
 
+// ShotsPerFiring defines the number of shots fired per firing session in a biathlon.
 const ShotsPerFiring = 5
 
+// LapTime holds statistics for a single lap (main or penalty).
 type LapStat struct {
 	Duration     time.Duration
 	AverageSpeed float64
 }
 
+// Report aggregates statistics for a single competitor's performance in the race.
 type Report struct {
 	CompetitorID        int
 	Status              domain.Status
@@ -25,6 +28,7 @@ type Report struct {
 	PossibleShots       int
 }
 
+// CalculateReport generates a performance Report for a given competitor based on their race data and the configuration.
 func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 	r := Report{
 		CompetitorID:   c.ID,
@@ -74,6 +78,7 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 	return r
 }
 
+// FormatDuration formats a time.Duration into a "HH:MM:SS.mmm" string.
 func FormatDuration(d time.Duration) string {
 	h := int(d.Hours())
 	m := int(d.Minutes()) % 60
@@ -82,6 +87,9 @@ func FormatDuration(d time.Duration) string {
 	return fmt.Sprintf("%02d:%02d:%02d.%03d", h, m, s, ms)
 }
 
+// String provides a compact string representation of the Report
+// conforming to the specified output format:
+// total_time id [{time_lap, avg}, ...] {time_penalty_lap, avg_penalty} shots/PossibleShots
 func (r Report) String() string {
 	var result string
 	switch r.Status {

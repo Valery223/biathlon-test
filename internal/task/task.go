@@ -27,6 +27,10 @@ func NewTask(cfg *config.Config, scanner ScannerEvent) *Task {
 	}
 }
 
+// Execute runs the main simulation loop.
+// It continuously scans for events, handles them, and once all events are processed,
+// it prints a report for each competitor.
+// It returns an error if a critical issue occurs during event scanning or processing.
 func (t Task) Execute() error {
 	mapCompetitors := make(map[int]*domain.Competitor)
 	err := t.processAllEvents(mapCompetitors)
