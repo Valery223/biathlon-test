@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Valery223/biathlon-test/internal/task"
+	"github.com/Valery223/biathlon-test/internal/domain"
 )
 
 type Scanner struct {
@@ -19,7 +19,7 @@ func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{scanner: bufio.NewScanner(r)}
 }
 
-func (s *Scanner) Scan(e *task.Event) error {
+func (s *Scanner) Scan(e *domain.Event) error {
 	if !s.scanner.Scan() {
 		if err := s.scanner.Err(); err != nil {
 			return err
@@ -32,7 +32,7 @@ func (s *Scanner) Scan(e *task.Event) error {
 
 }
 
-func (s *Scanner) parseLine(line string, e *task.Event) error {
+func (s *Scanner) parseLine(line string, e *domain.Event) error {
 	parts := strings.Fields(line)
 	if len(parts) < 3 {
 		return fmt.Errorf("invalid line format: %s", line)
@@ -52,8 +52,8 @@ func (s *Scanner) parseLine(line string, e *task.Event) error {
 		return fmt.Errorf("invalid ExtraParams: %w", err)
 	}
 	e.Time = parsedTime
-	e.EventID = eventID
-	e.ExtraParams = extraParams
+	e.ID = domain.EventID(eventID)
+	e.CompetitorID = extraParams
 	e.Comments = strings.Join(parts[3:], " ")
 	return nil
 }
