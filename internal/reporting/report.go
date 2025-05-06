@@ -17,6 +17,7 @@ type LapStat struct {
 
 type Report struct {
 	CompetitorID        int
+	Status              domain.Status
 	TotalTime           time.Duration
 	LapsStatistics      []LapStat
 	PenaltyLapStatictic LapStat
@@ -31,6 +32,8 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 		Shots:          c.Shots,
 	}
 
+	r.Status = c.Status
+
 	if len(c.Laps) == 0 || c.Laps[0].End.IsZero() {
 		r.TotalTime = 0
 	} else {
@@ -38,7 +41,6 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 	}
 
 	r.PossibleShots = len(c.Laps) * ShotsPerFiring
-	fmt.Println("--------,", len(c.Laps), r.PossibleShots)
 
 	currentLapStartTime := c.ScheduledStart
 	for _, lap := range c.Laps {
@@ -82,27 +84,33 @@ func FormatDuration(d time.Duration) string {
 
 func (r Report) String() string {
 	var result string
-	result += fmt.Sprintf("Competitor ID: %d ", r.CompetitorID)
-	result += fmt.Sprintf("Total Time: %s ", FormatDuration(r.TotalTime))
+	switch r.Status {
+	case domain.StatusNotFinished:
+		result += "[NotFinished]"
+	case domain.StatusNotStarted:
+		result += "[NotStarted]"
+	case domain.StatusFinished:
+		result += FormatDuration(r.TotalTime)
+	}
+	result += " "
 
-	result += "Lap Statistics:\n"
+	result += fmt.Sprintf("%d ", r.CompetitorID)
+	result += " "
+
 	result += "["
-	for i, lap := range r.LapsStatistics {
-		if i >= 1 {
+	for i, lapStat := range r.LapsStatistics {
+		if i > 0 {
 			result += ", "
 		}
-		result += "{"
-
-		result += fmt.Sprintf("Lap %d: Duration: %s, Average Speed: %.2f", i+1, FormatDuration(lap.Duraction), lap.AverageSpeed)
-		result += "}"
+		result += fmt.Sprintf("{%s %.3f}", FormatDuration(lapStat.Duraction), lapStat.AverageSpeed)
 	}
-	result += "]\n"
+	result += "]"
+	result += " "
 
-	result += "{"
-	result += fmt.Sprintf("Penalty Lap Time: %s ", FormatDuration(r.PenaltyLapStatictic.Duraction))
-	result += fmt.Sprintf("Penalty Lap Average Speed: %.2f", r.PenaltyLapStatictic.AverageSpeed)
-	result += "}\n"
+	result += fmt.Sprintf("{%s, %.2f}", FormatDuration(r.PenaltyLapStatictic.Duraction), r.PenaltyLapStatictic.AverageSpeed)
+	result += " "
 
-	result += fmt.Sprintf(" Shots/Possible: %d/%d", r.Shots, r.PossibleShots)
+	result += fmt.Sprintf("%d/%d", r.Shots, r.PossibleShots)
+
 	return result
 }

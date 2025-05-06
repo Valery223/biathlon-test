@@ -52,6 +52,8 @@ func HandleEvent(e *domain.Event, competitors map[int]*domain.Competitor, lapsCo
 			competitor.CurrentLap++
 			competitor.Laps = append(competitor.Laps, domain.Lap{})
 			competitor.Laps[competitor.CurrentLap].Start = e.Time
+		} else {
+			competitor.Status = domain.StatusFinished
 		}
 	case domain.EventCompetitorCanNotContinue:
 		competitor.Status = domain.StatusNotFinished
