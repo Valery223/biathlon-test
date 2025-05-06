@@ -11,7 +11,7 @@ import (
 const ShotsPerFiring = 5
 
 type LapStat struct {
-	Duraction    time.Duration
+	Duration     time.Duration
 	AverageSpeed float64
 }
 
@@ -45,9 +45,9 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 	currentLapStartTime := c.ScheduledStart
 	for _, lap := range c.Laps {
 		var lapStat LapStat
-		lapStat.Duraction = lap.End.Sub(currentLapStartTime)
-		if lapStat.Duraction > 0 {
-			lapStat.AverageSpeed = float64(cfg.LapLength) / lapStat.Duraction.Seconds()
+		lapStat.Duration = lap.End.Sub(currentLapStartTime)
+		if lapStat.Duration > 0 {
+			lapStat.AverageSpeed = float64(cfg.LapLength) / lapStat.Duration.Seconds()
 		} else {
 			lapStat.AverageSpeed = 0
 		}
@@ -64,7 +64,7 @@ func CalculateReport(c domain.Competitor, cfg *config.Config) Report {
 		tottalPenaltyLapTime += pLap.End.Sub(pLap.Start)
 	}
 
-	r.PenaltyLapStatictic.Duraction = tottalPenaltyLapTime
+	r.PenaltyLapStatictic.Duration = tottalPenaltyLapTime
 	if len(c.PenaltyLaps) == 0 || tottalPenaltyLapTime == 0 {
 		r.PenaltyLapStatictic.AverageSpeed = 0
 	} else {
@@ -102,12 +102,12 @@ func (r Report) String() string {
 		if i > 0 {
 			result += ", "
 		}
-		result += fmt.Sprintf("{%s %.3f}", FormatDuration(lapStat.Duraction), lapStat.AverageSpeed)
+		result += fmt.Sprintf("{%s %.3f}", FormatDuration(lapStat.Duration), lapStat.AverageSpeed)
 	}
 	result += "]"
 	result += " "
 
-	result += fmt.Sprintf("{%s, %.2f}", FormatDuration(r.PenaltyLapStatictic.Duraction), r.PenaltyLapStatictic.AverageSpeed)
+	result += fmt.Sprintf("{%s, %.2f}", FormatDuration(r.PenaltyLapStatictic.Duration), r.PenaltyLapStatictic.AverageSpeed)
 	result += " "
 
 	result += fmt.Sprintf("%d/%d", r.Shots, r.PossibleShots)
